@@ -1,4 +1,4 @@
-/*===---- rtmintrin.h - RTM intrinsics -------------------------------------===
+/*===---- cpuid.h - X86 cpu model detection --------------------------------===
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,34 +21,14 @@
  *===-----------------------------------------------------------------------===
  */
 
-#ifndef __IMMINTRIN_H
-#error "Never use <rtmintrin.h> directly; include <immintrin.h> instead."
+#if !(__x86_64__ || __i386__)
+#error this header is for x86 only
 #endif
 
-#ifndef __RTMINTRIN_H
-#define __RTMINTRIN_H
-
-#define _XBEGIN_STARTED   (~0u)
-#define _XABORT_EXPLICIT  (1 << 0)
-#define _XABORT_RETRY     (1 << 1)
-#define _XABORT_CONFLICT  (1 << 2)
-#define _XABORT_CAPACITY  (1 << 3)
-#define _XABORT_DEBUG     (1 << 4)
-#define _XABORT_NESTED    (1 << 5)
-#define _XABORT_CODE(x)   (((x) >> 24) & 0xFF)
-
-static __inline__ unsigned int __attribute__((__always_inline__, __nodebug__))
-_xbegin(void)
-{
-  return __builtin_ia32_xbegin();
+static __inline int __get_cpuid (unsigned int __level, unsigned int *__eax,
+                                 unsigned int *__ebx, unsigned int *__ecx,
+                                 unsigned int *__edx) {
+    __asm("cpuid" : "=a"(*__eax), "=b" (*__ebx), "=c"(*__ecx), "=d"(*__edx)
+                  : "0"(__level));
+    return 1;
 }
-
-static __inline__ void __attribute__((__always_inline__, __nodebug__))
-_xend(void)
-{
-  __builtin_ia32_xend();
-}
-
-#define _xabort(imm) __builtin_ia32_xabort((imm))
-
-#endif /* __RTMINTRIN_H */

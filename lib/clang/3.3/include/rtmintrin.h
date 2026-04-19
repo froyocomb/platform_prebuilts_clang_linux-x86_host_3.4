@@ -1,4 +1,4 @@
-/*===---- prfchwintrin.h - PREFETCHW intrinsic -----------------------------===
+/*===---- rtmintrin.h - RTM intrinsics -------------------------------------===
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,19 +21,29 @@
  *===-----------------------------------------------------------------------===
  */
 
-#if !defined(__X86INTRIN_H) && !defined(_MM3DNOW_H_INCLUDED)
-#error "Never use <prfchwintrin.h> directly; include <x86intrin.h> or <mm3dnow.h> instead."
+#ifndef __IMMINTRIN_H
+#error "Never use <rtmintrin.h> directly; include <immintrin.h> instead."
 #endif
 
-#ifndef __PRFCHWINTRIN_H
-#define __PRFCHWINTRIN_H
+#define _XBEGIN_STARTED   (~0u)
+#define _XABORT_EXPLICIT  (1 << 0)
+#define _XABORT_RETRY     (1 << 1)
+#define _XABORT_CONFLICT  (1 << 2)
+#define _XABORT_CAPACITY  (1 << 3)
+#define _XABORT_DEBUG     (1 << 4)
+#define _XABORT_NESTED    (1 << 5)
+#define _XABORT_CODE(x)   (((x) >> 24) & 0xFF)
 
-#if defined(__PRFCHW__) || defined(__3dNOW__)
-static __inline__ void __attribute__((__always_inline__, __nodebug__))
-_m_prefetchw(void *__P)
+static __inline__ unsigned int __attribute__((__always_inline__, __nodebug__))
+_xbegin(void)
 {
-  __builtin_prefetch (__P, 1, 3 /* _MM_HINT_T0 */);
+  return __builtin_ia32_xbegin();
 }
-#endif
 
-#endif /* __PRFCHWINTRIN_H */
+static __inline__ void __attribute__((__always_inline__, __nodebug__))
+_xend(void)
+{
+  __builtin_ia32_xend();
+}
+
+#define _xabort(imm) __builtin_ia32_xabort((imm))

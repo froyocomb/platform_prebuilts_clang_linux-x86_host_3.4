@@ -1,4 +1,4 @@
-/*===---- rdseedintrin.h - RDSEED intrinsics -------------------------------===
+/*===---- prfchwintrin.h - PREFETCHW intrinsic -----------------------------===
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,32 +21,14 @@
  *===-----------------------------------------------------------------------===
  */
 
-#ifndef __X86INTRIN_H
-#error "Never use <rdseedintrin.h> directly; include <x86intrin.h> instead."
+#if !defined(__X86INTRIN_H) && !defined(_MM3DNOW_H_INCLUDED)
+#error "Never use <prfchwintrin.h> directly; include <x86intrin.h> or <mm3dnow.h> instead."
 #endif
 
-#ifndef __RDSEEDINTRIN_H
-#define __RDSEEDINTRIN_H
-
-#ifdef __RDSEED__
-static __inline__ int __attribute__((__always_inline__, __nodebug__))
-_rdseed16_step(unsigned short *__p)
+#if defined(__PRFCHW__) || defined(__3dNOW__)
+static __inline__ void __attribute__((__always_inline__, __nodebug__))
+_m_prefetchw(void *__P)
 {
-  return __builtin_ia32_rdseed16_step(__p);
-}
-
-static __inline__ int __attribute__((__always_inline__, __nodebug__))
-_rdseed32_step(unsigned int *__p)
-{
-  return __builtin_ia32_rdseed32_step(__p);
-}
-
-#ifdef __x86_64__
-static __inline__ int __attribute__((__always_inline__, __nodebug__))
-_rdseed64_step(unsigned long long *__p)
-{
-  return __builtin_ia32_rdseed64_step(__p);
+  __builtin_prefetch (__P, 1, 3 /* _MM_HINT_T0 */);
 }
 #endif
-#endif /* __RDSEED__ */
-#endif /* __RDSEEDINTRIN_H */
